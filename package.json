@@ -1,0 +1,24 @@
+{
+  "name": "webpack-vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "css-loader": "^0.26.4",
+    "html-loader": "^0.4.5",
+    "style-loader": "^0.13.2",
+    "vue": "^2.2.2",
+    "vue-loader": "^11.1.4",
+    "vue-template-compiler": "^2.2.2",
+    "webpack": "^2.2.1",
+    "vue-resource":"*",
+    "vue-router":"*",
+    "vuex":"*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
