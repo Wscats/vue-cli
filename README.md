@@ -1,4 +1,20 @@
-# 使用 Composition-API 风格重构逻辑
+# Get Started
+
+```bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:3888
+npm run serve
+
+# build for production with minification
+npm run build
+```
+
+建议配合 Visual Studio Code 和 [Vue Snippets](https://github.com/Wscats/vue-snippets) 代码插件
+
+# Composition API
+
 下载了 `@vue/composition-api` 插件以后，按照文档在 main.js 引用便开启了 Composition API 的能力。
 ```js
 // main.js
