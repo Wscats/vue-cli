@@ -1,10 +1,16 @@
-# Get Started
+# Quick Start
+
+本项目综合运用了 Vue3.0 的新特性，适合新手学习😁
+
+- 基于`Composition API`即`Function-based AP`I进行改造，优先体验 Vue3 特性
+- 使用单例对象进行组件通信
+- 使用 axios 库进行网络请求，weui 库实现 UI 界面
 
 ```bash
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:3888
+# serve with hot reload at localhost:8080
 npm run serve
 
 # build for production with minification
@@ -12,6 +18,33 @@ npm run build
 ```
 
 建议配合 Visual Studio Code 和 [Vue Snippets](https://github.com/Wscats/vue-snippets) 代码插件
+
+# Dependencies
+
+```js
+"@vue/composition-api": "^0.3.4",
+"axios": "^0.19.0",
+"core-js": "^3.4.3",
+"vue": "^2.6.10",
+"weui": "^2.1.3"
+```
+
+# Directory Structure
+
+```js
+├── src
+│   ├── App.vue                          # 组件入口
+│   ├── assets                           # 资源目录
+│   ├── stores/index.js                  # 状态管理
+│   ├── components                       # 组件目录
+│   │   ├── Header.vue                   # 头部组件
+│   │   ├── Search.vue                   # 搜索框组件
+│   │   ├── Panel.vue                    # 列表组件
+│   ├── main.js                          # 项目入口
+├── public                               # 模板文件
+├── vue.config.js                        # 脚手架配置文件
+```
+
 
 # Composition API
 
@@ -128,3 +161,7 @@ export default {
 };
 </script>
 ```
+
+# License
+
+Copyright(C) 2019, [Vue Cli](https://github.com/Wscats/vue-cli) is released under the [MIT](http://opensource.org/licenses/MIT).
