@@ -9,10 +9,8 @@
 ```bash
 # 安装依赖
 npm install
-
 # 在浏览器打开localhost:8080查看页面，并实时热更新
 npm run serve
-
 # 发布项目
 npm run build
 ```
@@ -45,6 +43,7 @@ npm run build
 │   ├── main.js                          # 项目入口
 ├── public                               # 模板文件
 ├── vue.config.js                        # 脚手架配置文件
+├── screenshot                           # 程序截图
 ```
 
 
@@ -71,7 +70,12 @@ new Vue({
 }).$mount('#app')
 ```
 
-我们在 `main.js` 中引入 `weui` 的基础样式库，方便我们可以在全局使用微信基础样式构建项目页面：
+
+```bash
+npm install weui --save
+```
+
+我们同样使用 `npm` 安装 `weui` 模块，然后在 `main.js` 中引入 `weui`的基础样式库，方便我们可以在全局使用微信基础样式构建项目页面。
 
 ```js
 // main.js
@@ -104,7 +108,7 @@ export default {
 };
 </script>
 ```
-在 `src/components` 目录下新建第一个组件，取名为 `Header.vue` 写入以下代码：
+在 `src/components` 目录下新建第一个组件，取名为 `Header.vue` 写入以下代码，[点击查看源代码](https://github.com/Wscats/vue-cli/blob/master/src/components/Header.vue)：
 
 ```html
 <template>
@@ -147,7 +151,7 @@ header {
 
 ## setup
 
-这里运用了一个全新的属性 `setup` ，这是一个组件的入口，让我们可以运用 `Vue3.0` 新的接口，它运行在组件被实例化时候，`props` 属性被定义之后，实际上等价于 `Vue2.0` 版本的 `beforeCreate` 和 `Created` 这两个生命周期，`setup` 返回的是一个对象，里面的所有被返回的属性值，都会被合并到 `Vue2.0` 的 `render` 渲染函数里面，在单文件组件中，它将配合 `<template>` 模板的内容，完成 `Model` 到 `View` 之间的绑定，在未来版本中应该还会支持返回 `JSX` 代码片段。
+这里运用了一个全新的属性 `setup` ，这是一个组件的入口，让我们可以运用 `Vue3.0` 暴露的新接口，它运行在组件被实例化时候，`props` 属性被定义之后，实际上等价于 `Vue2.0` 版本的 `beforeCreate` 和 `Created` 这两个生命周期，`setup` 返回的是一个对象，里面的所有被返回的属性值，都会被合并到 `Vue2.0` 的 `render` 渲染函数里面，在单文件组件中，它将配合 `<template>` 模板的内容，完成 `Model` 到 `View` 之间的绑定，在未来版本中应该还会支持返回 `JSX` 代码片段。
 
 ```html
 <template>
@@ -215,9 +219,132 @@ export default {
 </script>
 ```
 
+<img src="./screenshot/1.gif" />
+
+## context
+
+`setup` 函数的第二个参数是一个上下文对象，这个上下文对象中包含了一些有用的属性，这些属性在 `Vue2.0` 中需要通过 `this` 才能访问到，在 `vue3.0` 中，访问他们变成以下形式：
+
+```js
+setup(props, ctx) {
+  console.log(ctx) // 在 setup() 函数中无法访问到 this
+  console.log(this) // undefined
+}
+```
+
+具体能访问到以下有用的属性：
+
+- root
+- parent
+- refs
+- attrs
+- listeners
+- isServer
+- ssrContext
+- emit
+
 ---
 
-完成上面的 `Header.vue` 我们
+完成上面的 `Header.vue` 我们就编写 `Search.vue` 搜索框组件，继续再 `src/components` 文件夹下面新建 `Search.vue` 文件，[点击查看源代码](https://github.com/Wscats/vue-cli/blob/master/src/components/Search.vue)。
+
+```html
+<template>
+  <div class="weui-panel weui-panel_access">
+    <div v-for="(n,index) in newComputed" :key="index" class="weui-panel__bd">
+      <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+        <div class="weui-media-box__hd">
+          <img class="weui-media-box__thumb" :src="n.author.avatar_url" alt />
+        </div>
+        <div class="weui-media-box__bd">
+          <h4 class="weui-media-box__title" v-text="n.title"></h4>
+          <p class="weui-media-box__desc" v-text="n.author.loginname"></p>
+        </div>
+      </a>
+    </div>
+    <div @click="loadMore" class="weui-panel__ft">
+      <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link">
+        <div class="weui-cell__bd">查看更多</div>
+        <span class="weui-cell__ft"></span>
+      </a>
+    </div>
+  </div>
+</template>
+<script>
+import { reactive, toRefs, onMounted, computed } from "@vue/composition-api";
+import axios from "axios";
+import store from "../stores";
+export default {
+  setup() {
+    const state = reactive({
+      // 页数
+      page: 1,
+      // 列表数据
+      news: [],
+      // 通过搜索框的值去筛选劣列表数据
+      newComputed: computed(() => {
+        // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
+        if (store.state.searchValue) {
+          return state.news.filter(item => {
+            if (item.title.indexOf(store.state.searchValue) >= 0) {
+              return item;
+            }
+          });
+        } else {
+          return state.news;
+        }
+      }),
+      searchValue: store.state
+    });
+    // 发送 ajax 请求获取列表数据
+    const loadMore = async () => {
+      // 获取列表数据
+      let data = await axios.get("https://cnodejs.org/api/v1/topics", {
+        params: {
+          // 每一页的主题数量
+          limit: 10,
+          // 页数
+          page: state.page
+        }
+      });
+      // 叠加页数
+      state.page += 1;
+      state.news = [...state.news, ...data.data.data];
+    };
+    onMounted(() => {
+      // 首屏加载的时候触发请求
+      loadMore();
+    });
+    return {
+      // 让数据保持响应式
+      ...toRefs(state),
+      // 查看更多事件
+      loadMore
+    };
+  }
+};
+</script>
+```
+
+## toRefs
+
+可以看到我们上面用了很多的新属性，我们先介绍 `toRefs` ，函数可以将 `reactive()` 创建出来的响应式对象，转换为普通的对象，只不过，这个对象上的每个属性节点，都是 `ref()` 类型的响应式数据，配合 `v-model` 指令能完成数据的双向绑定，在开发中非常高效。
+
+```js
+import { reactive, toRefs } from "@vue/composition-api";
+export default {
+  setup() {
+    const state = reactive({ name: 'Eno Yao' })
+  }
+  return {
+    // 直接返回 state 那么数据会是非响应式的， MV 单向绑定
+    // ...state,
+    // toRefs 包装后返回 state 那么数据会是响应式的， MVVM 双向绑定
+    ...toRefs(state),
+  };
+}
+```
+
+<img src="./screenshot/2.gif" />
 
 # License
 
