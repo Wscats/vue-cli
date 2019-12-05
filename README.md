@@ -249,76 +249,63 @@ setup(props, ctx) {
 
 ```html
 <template>
-  <div class="weui-panel weui-panel_access">
-    <div v-for="(n,index) in newComputed" :key="index" class="weui-panel__bd">
-      <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
-        <div class="weui-media-box__hd">
-          <img class="weui-media-box__thumb" :src="n.author.avatar_url" alt />
-        </div>
-        <div class="weui-media-box__bd">
-          <h4 class="weui-media-box__title" v-text="n.title"></h4>
-          <p class="weui-media-box__desc" v-text="n.author.loginname"></p>
-        </div>
-      </a>
-    </div>
-    <div @click="loadMore" class="weui-panel__ft">
-      <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link">
-        <div class="weui-cell__bd">查看更多</div>
-        <span class="weui-cell__ft"></span>
-      </a>
-    </div>
+  <div :class="['weui-search-bar', {'weui-search-bar_focusing' : isFocus}]" id="searchBar">
+    <form class="weui-search-bar__form">
+      <div class="weui-search-bar__box">
+        <i class="weui-icon-search"></i>
+        <input
+          v-model="searchValue"
+          ref="inputElement"
+          type="search"
+          class="weui-search-bar__input"
+          id="searchInput"
+          placeholder="搜索"
+          required
+        />
+        <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+      </div>
+      <label @click="toggle" class="weui-search-bar__label" id="searchText">
+        <i class="weui-icon-search"></i>
+        <span>搜索</span>
+      </label>
+    </form>
+    <a @click="toggle" href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
   </div>
 </template>
 <script>
-import { reactive, toRefs, onMounted, computed } from "@vue/composition-api";
-import axios from "axios";
+import { reactive, toRefs, watch } from "@vue/composition-api";
 import store from "../stores";
 export default {
+  // setup相当于2.x版本的beforeCreate生命周期
   setup() {
+    // reactive() 函数接收一个普通对象，返回一个响应式的数据对象
     const state = reactive({
-      // 页数
-      page: 1,
-      // 列表数据
-      news: [],
-      // 通过搜索框的值去筛选劣列表数据
-      newComputed: computed(() => {
-        // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
-        if (store.state.searchValue) {
-          return state.news.filter(item => {
-            if (item.title.indexOf(store.state.searchValue) >= 0) {
-              return item;
-            }
-          });
-        } else {
-          return state.news;
-        }
-      }),
-      searchValue: store.state
+      searchValue: "",
+      // 搜索框两个状态，聚焦和非聚焦
+      isFocus: false,
+      inputElement: null
     });
-    // 发送 ajax 请求获取列表数据
-    const loadMore = async () => {
-      // 获取列表数据
-      let data = await axios.get("https://cnodejs.org/api/v1/topics", {
-        params: {
-          // 每一页的主题数量
-          limit: 10,
-          // 页数
-          page: state.page
-        }
-      });
-      // 叠加页数
-      state.page += 1;
-      state.news = [...state.news, ...data.data.data];
+    // 切换搜索框状态的方法
+    const toggle = () => {
+      // 让点击搜索后出现的输入框自动聚焦
+      state.inputElement.focus();
+      state.isFocus = !state.isFocus;
     };
-    onMounted(() => {
-      // 首屏加载的时候触发请求
-      loadMore();
-    });
+    // 监听搜索框的值
+    watch(
+      () => {
+        return state.searchValue;
+      },
+      () => {
+        // 存储输入框到状态 store 中心，用于组件通信
+        store.setSearchValue(state.searchValue);
+        // window.console.log(state.searchValue);
+      }
+    );
     return {
-      // 让数据保持响应式
+      // 将 state 上的每个属性，都转化为 ref 形式的响应式数据
       ...toRefs(state),
-      // 查看更多事件
-      loadMore
+      toggle
     };
   }
 };
@@ -345,6 +332,55 @@ export default {
 ```
 
 <img src="./screenshot/2.gif" />
+
+这里的输入框拥有两个状态，一个是有输入框的状态和无输入框的状态，所以我们需要一个布尔值 `isFocus` 来控制状态，封装了一个 `toggle` 方法，让 `isFocus` 值切换真和假两个状态。
+```js
+const toggle = () => {
+  // isFocus 值取反
+  state.isFocus = !state.isFocus;
+};
+```
+然后配合 `v-bind:class` 指令，让 `weui-search-bar_focusing` 类名根据 `isFocus` 值决定是否出现，从而更改搜索框的状态。
+```html
+<div :class="['weui-search-bar', {'weui-search-bar_focusing' : isFocus}]" id="searchBar">
+```
+这里的搜索输入框放入了 `v-model` 指令，用于接收用户的输入信息，方便后面配合列表组件执行检索逻辑，还放入了 `ref` 属性，用于获取该 `<input/>` 标签的元素节点，配合`state.inputElement.focus()` 原生方法，在切换搜索框状态的时候光标自动聚焦到输入框，增强用户体验。
+```html
+<input
+  v-model="searchValue"
+  ref="inputElement"
+/>
+```
+
+<img src="./screenshot/3.gif" />
+
+## watch
+
+`watch()` 函数用来监视某些数据项的变化，从而触发某些特定的操作，使用之前还是需要按需导入：
+
+```js
+import { reactive, watch } from "@vue/composition-api";
+export default {
+  setup() {
+    const state = reactive({
+      searchValue: "",
+    });
+    // 监听搜索框的值
+    watch(
+      () => {
+        return state.searchValue;
+      },
+      () => {
+        // 存储输入框到状态 store 中心，用于组件通信
+        store.setSearchValue(state.searchValue);
+      }
+    );
+    return {
+      ...toRefs(state)
+    };
+  }
+};
+```
 
 # License
 
