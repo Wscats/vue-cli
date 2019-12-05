@@ -54,16 +54,16 @@ npm run build
 npm install @vue/composition-api --save
 ```
 
-使用 `npm` 命令下载了 `@vue/composition-api` 插件以后，``，按照文档在 `main.js` 引用便开启了 `Composition API` 的能力。
+使用 `npm` 命令下载了 `@vue/composition-api` 插件以后，引入该模块后，需要显式调用 `Vue.use(VueCompositionApi)` ，按照文档在 `main.js` 引用便开启了 `Composition API` 的能力。
 ```js
 // main.js
 import Vue from 'vue'
 import App from './App.vue'
-// Composition API
+// 1.引入Composition API模块
 import VueCompositionApi from '@vue/composition-api'
 
 Vue.config.productionTip = false
-// 不要漏了显式调用 VueCompositionApi
+// 2.不要漏了显式调用 VueCompositionApi
 Vue.use(VueCompositionApi)
 
 new Vue({
@@ -217,7 +217,7 @@ export default {
 
 ---
 
-完成上面的 `Header.vue`
+完成上面的 `Header.vue` 我们
 
 # License
 
