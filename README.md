@@ -1,8 +1,8 @@
 # Quick Start
 
-本项目综合运用了 Vue3.0 的新特性，适合新手学习😁
+本项目综合运用了 `Vue3.0` 的新特性，适合新手学习😁
 
-- 基于 `Composition API` 即 `Function-based AP` I进行改造，配合 `Vue Cli`，优先体验 Vue3 特性
+- 基于 `Composition API` 即 `Function-based AP` I进行改造，配合 `Vue Cli`，优先体验 `Vue3` 特性
 - 使用单例对象模式进行组件通信
 - 使用 axios 库进行网络请求，weui 库实现 UI 界面
 
@@ -333,6 +333,8 @@ export default {
 
 <img src="./screenshot/2.gif" />
 
+## template refs
+
 这里的输入框拥有两个状态，一个是有输入框的状态和无输入框的状态，所以我们需要一个布尔值 `isFocus` 来控制状态，封装了一个 `toggle` 方法，让 `isFocus` 值切换真和假两个状态。
 ```js
 const toggle = () => {
@@ -356,10 +358,11 @@ const toggle = () => {
 
 ## watch
 
-`watch()` 函数用来监视某些数据项的变化，从而触发某些特定的操作，使用之前还是需要按需导入：
+`watch()` 函数用来监视某些数据项的变化，从而触发某些特定的操作，使用之前还是需要按需导入，监听 `searchValue` 的变化，然后触发回调函数里面的逻辑，也就是监听用户输入的检索值，然后触发回调函数的逻辑把 `searchValue` 值存进我们创建 `store` 对象里面，方面后面和 `Panel.vue` 列表组件进行数据通信：
 
 ```js
 import { reactive, watch } from "@vue/composition-api";
+import store from "../stores";
 export default {
   setup() {
     const state = reactive({
@@ -381,6 +384,179 @@ export default {
   }
 };
 ```
+
+## state management
+
+在这里我们维护一份数据来实现共享状态管理，也就是说我们新建一个 `store.js` 暴露出一个 `store` 对象共享 `Panel` 和 `Search` 组件的 `searchValue` 值，当 `Search.vue` 组件从输入框接受到 `searchValue` 检索值，就放到 `store.js` 的 `store` 对象中，然后把该对象注入到 `Search` 组件中，那么两个组件都可以共享 `store` 对象中的值，为了方便调试我们还分别封装了 `setSearchValue` 和 `getSearchValue` 来去操作该 `store` 对象，这样我们就可以跟踪状态的改变。
+
+```js
+// store.js
+export default {
+    state: {
+        searchValue: ""
+    },
+    // 设置搜索框的值
+    setSearchValue(value) {
+        this.state.searchValue = value
+    },
+    // 获取搜索框的值
+    getSearchValue() {
+        return this.state.searchValue
+    }
+}
+```
+
+---
+
+完成上面的 `Search.vue` 我们紧接着编写 `Panel.vue` 搜索框组件，继续再 `src/components` 文件夹下面新建 `Panel.vue` 文件，[点击查看源代码](https://github.com/Wscats/vue-cli/blob/master/src/components/Panel.vue)。
+
+```html
+<template>
+  <div class="weui-panel weui-panel_access">
+    <div v-for="(n,index) in newComputed" :key="index" class="weui-panel__bd">
+      <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
+        <div class="weui-media-box__hd">
+          <img class="weui-media-box__thumb" :src="n.author.avatar_url" alt />
+        </div>
+        <div class="weui-media-box__bd">
+          <h4 class="weui-media-box__title" v-text="n.title"></h4>
+          <p class="weui-media-box__desc" v-text="n.author.loginname"></p>
+        </div>
+      </a>
+    </div>
+    <div @click="loadMore" class="weui-panel__ft">
+      <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link">
+        <div class="weui-cell__bd">查看更多</div>
+        <span class="weui-cell__ft"></span>
+      </a>
+    </div>
+  </div>
+</template>
+<script>
+import { reactive, toRefs, onMounted, computed } from "@vue/composition-api";
+import axios from "axios";
+import store from "../stores";
+export default {
+  setup() {
+    const state = reactive({
+      // 页数
+      page: 1,
+      // 列表数据
+      news: [],
+      // 通过搜索框的值去筛选劣列表数据
+      newComputed: computed(() => {
+        // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
+        if (store.state.searchValue) {
+          return state.news.filter(item => {
+            if (item.title.indexOf(store.state.searchValue) >= 0) {
+              return item;
+            }
+          });
+        } else {
+          return state.news;
+        }
+      }),
+      searchValue: store.state
+    });
+    // 发送 ajax 请求获取列表数据
+    const loadMore = async () => {
+      // 获取列表数据
+      let data = await axios.get("https://cnodejs.org/api/v1/topics", {
+        params: {
+          // 每一页的主题数量
+          limit: 10,
+          // 页数
+          page: state.page
+        }
+      });
+      // 叠加页数
+      state.page += 1;
+      state.news = [...state.news, ...data.data.data];
+    };
+    onMounted(() => {
+      // 首屏加载的时候触发请求
+      loadMore();
+    });
+    return {
+      // 让数据保持响应式
+      ...toRefs(state),
+      // 查看更多事件
+      loadMore
+    };
+  }
+};
+</script>
+```
+
+# lifecycle hooks
+
+`Vue3.0` 的生命周期钩子和之前不一样，新版本都是以 `onXxx()` 函数注册使用，同样需要局部引入生命周期的对应模块：
+
+```js
+import { onMounted, onUpdated, onUnmounted } from "@vue/composition-api";
+export default {
+  setup() {
+    const loadMore = () => {};
+    onMounted(() => {
+      loadMore();
+    });
+    onUpdated(() => {
+      console.log('updated!')
+    })
+    onUnmounted(() => {
+      console.log('unmounted!')
+    })
+    return {
+      loadMore
+    };
+  }
+};
+```
+
+以下是新旧版本生命周期的对比：
+
+- <s>`beforeCreate`</s> -> use `setup()`
+- <s>`created`</s> -> use `setup()`
+- `beforeMount` -> `onBeforeMount`
+- `mounted` -> `onMounted`
+- `beforeUpdate` -> `onBeforeUpdate`
+- `updated` -> `onUpdated`
+- `beforeDestroy` -> `onBeforeUnmount`
+- `destroyed` -> `onUnmounted`
+- `errorCaptured` -> `onErrorCaptured`
+
+同时新版本还提供了两个全新的生命周期帮助我们去调试代码：
+
+- onRenderTracked
+- onRenderTriggered
+
+在 `Panel` 列表组件中，我们注册 `onMounted` 生命周期，并在里面触发请求方法 `loadMore` 以便从后端获取数据到数据层，这里我们使用的是 `axios` 网络请求库，所以我们需要安装该模块：
+
+```bash
+npm install axios --save
+```
+封装了一个请求列表数据方法，接口指向的是 `Cnode` 官网提供的 `API` ，由于 `axios` 返回的是 `Promise` ，所以配合 `async` 和 `await` 可以完美的编写异步逻辑，然后结合`onMounted` 生命周期触发，并将方法绑定到视图层的查看更多按钮上，就可以完成列表首次的加载和点击查看更多的懒加载功能。
+```js
+// 发送 ajax 请求获取列表数据
+const loadMore = async () => {
+  // 获取列表数据
+  let data = await axios.get("https://cnodejs.org/api/v1/topics", {
+    params: {
+      // 每一页的主题数量
+      limit: 10,
+      // 页数
+      page: state.page
+    }
+  });
+  // 叠加页数
+  state.page += 1;
+  // 合并列表数据
+  state.news = [...state.news, ...data.data.data];
+};
+```
+
+<img src="./screenshot/4.gif" />
+
 
 # License
 
