@@ -622,6 +622,8 @@ export default {
 }
 ```
 
+
+
 # License
 
 Copyright(C) 2019, [Vue Cli](https://github.com/Wscats/vue-cli) is released under the [MIT](http://opensource.org/licenses/MIT).
