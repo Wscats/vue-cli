@@ -108,6 +108,7 @@ export default {
 };
 </script>
 ```
+
 在 `src/components` 目录下新建第一个组件，取名为 `Header.vue` 写入以下代码，[点击查看源代码](https://github.com/Wscats/vue-cli/blob/master/src/components/Header.vue)：
 
 ```html
@@ -184,6 +185,7 @@ const state = reactive({ name: 'Eno Yao' })
 ## props
 
 在 `Vue2.0` 中我们可以使用 `props` 属性值完成父子通信，在这里我们需要定义 `props` 属性去定义接受值的类型，然后我们可以利用 `setup` 的第一个参数获取 `props` 使用。
+
 ```js
 export default {
   props: {
@@ -199,6 +201,7 @@ export default {
 ```
 
 我们在 `App.vue` 里面就可以使用该头部组件，有了上面的 `props` 我们可以根据传进来的值，让这个头部组件呈现不同的状态。
+
 ```html
 <template>
   <div id="app">
@@ -336,17 +339,22 @@ export default {
 ## template refs
 
 这里的输入框拥有两个状态，一个是有输入框的状态和无输入框的状态，所以我们需要一个布尔值 `isFocus` 来控制状态，封装了一个 `toggle` 方法，让 `isFocus` 值切换真和假两个状态。
+
 ```js
 const toggle = () => {
   // isFocus 值取反
   state.isFocus = !state.isFocus;
 };
 ```
+
 然后配合 `v-bind:class` 指令，让 `weui-search-bar_focusing` 类名根据 `isFocus` 值决定是否出现，从而更改搜索框的状态。
+
 ```html
 <div :class="['weui-search-bar', {'weui-search-bar_focusing' : isFocus}]" id="searchBar">
 ```
+
 这里的搜索输入框放入了 `v-model` 指令，用于接收用户的输入信息，方便后面配合列表组件执行检索逻辑，还放入了 `ref` 属性，用于获取该 `<input/>` 标签的元素节点，配合`state.inputElement.focus()` 原生方法，在切换搜索框状态的时候光标自动聚焦到输入框，增强用户体验。
+
 ```html
 <input
   v-model="searchValue"
@@ -535,7 +543,9 @@ export default {
 ```bash
 npm install axios --save
 ```
+
 封装了一个请求列表数据方法，接口指向的是 `Cnode` 官网提供的 `API` ，由于 `axios` 返回的是 `Promise` ，所以配合 `async` 和 `await` 可以完美的编写异步逻辑，然后结合`onMounted` 生命周期触发，并将方法绑定到视图层的查看更多按钮上，就可以完成列表首次的加载和点击查看更多的懒加载功能。
+
 ```js
 // 发送 ajax 请求获取列表数据
 const loadMore = async () => {
@@ -553,10 +563,64 @@ const loadMore = async () => {
   // 合并列表数据
   state.news = [...state.news, ...data.data.data];
 };
+onMounted(() => {
+  // 首屏加载的时候触发请求
+  loadMore();
+});
 ```
 
 <img src="./screenshot/4.gif" />
 
+## computed
+
+接下来我们就使用另外一个属性 `computed` 计算属性，跟 `Vue2.0` 的使用方式很相近，同样需要按需导入该模块：
+
+```js
+import { computed } from '@vue/composition-api';
+```
+
+计算属性分两种，只读计算属性和可读可写计算属性：
+```js
+// 只读计算属性
+let newsComputed = computed(() => news.value + 1)
+// 可读可写
+let newsComputed = computed({
+  // 取值函数
+  get: () => news.value + 2,
+  // 赋值函数
+  set: val => {
+    news.value = news.value - 3
+  }
+})
+```
+
+这里我们使用可读可写计算属性去处理列表数据，还记得我们上一个组件 `Search.vue` 吗，我们可以结合用户在搜索框输入的检索值，配合 `computed` 计算属性来筛选对我们用户有用列表数据，所以我们首先从 `store` 的共享实例里面拿到 `Search.vue` 搜索框共享的 `searchValue` ，然后利用原生字符串方法 `indexOf` 和 数组方法 `filter` 来过滤列表的数据，然后重新返回新的列表数据 `newsComputed`，并在视图层上配合 `v-for` 指令去渲染新的列表数据，这样做既可以在没搜索框检索值的时候返回原列表数据 `news` ，而在有搜索框检索值的时候返回新列表数据 `newsComputed`。
+
+```js
+import store from "../stores";
+export default {
+  setup() {
+    const state = reactive({
+      // 原列表数据
+      news: [],
+      // 通过搜索框的值去筛选后的新列表数据
+      newsComputed: computed(() => {
+        // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
+        if (store.state.searchValue) {
+          return state.news.filter(item => {
+            if (item.title.indexOf(store.state.searchValue) >= 0) {
+              return item;
+            }
+          });
+        } else {
+          return state.news;
+        }
+      }),
+      searchValue: store.state
+    });
+  }
+}
+```
 
 # License
 

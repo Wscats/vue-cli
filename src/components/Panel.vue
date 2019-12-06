@@ -1,6 +1,6 @@
 <template>
   <div class="weui-panel weui-panel_access">
-    <div v-for="(n,index) in newComputed" :key="index" class="weui-panel__bd">
+    <div v-for="(n,index) in newsComputed" :key="index" class="weui-panel__bd">
       <a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">
         <div class="weui-media-box__hd">
           <img class="weui-media-box__thumb" :src="n.author.avatar_url" alt />
@@ -30,8 +30,8 @@ export default {
       page: 1,
       // 列表数据
       news: [],
-      // 通过搜索框的值去筛选劣列表数据
-      newComputed: computed(() => {
+      // 通过搜索框的值去筛选后的新列表数据
+      newsComputed: computed(() => {
         // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
         if (store.state.searchValue) {
           return state.news.filter(item => {
