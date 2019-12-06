@@ -150,7 +150,7 @@ header {
 
 ---
 
-## setup
+# setup
 
 这里运用了一个全新的属性 `setup` ，这是一个组件的入口，让我们可以运用 `Vue3.0` 暴露的新接口，它运行在组件被实例化时候，`props` 属性被定义之后，实际上等价于 `Vue2.0` 版本的 `beforeCreate` 和 `Created` 这两个生命周期，`setup` 返回的是一个对象，里面的所有被返回的属性值，都会被合并到 `Vue2.0` 的 `render` 渲染函数里面，在单文件组件中，它将配合 `<template>` 模板的内容，完成 `Model` 到 `View` 之间的绑定，在未来版本中应该还会支持返回 `JSX` 代码片段。
 
@@ -174,7 +174,7 @@ export default {
 </script>
 ```
 
-## reactive
+# reactive
 
 在 `setup` 函数里面， 我们适应了 Vue3.0 的第一个新接口 `reactive` 它主要是处理你的对象让它经过 `Proxy` 的加工变为一个响应式的对象，类似于 `Vue2.0` 版本的 `data` 属性，需要注意的是加工后的对象跟原对象是不相等的，并且加工后的对象属于深度克隆的对象。
 
@@ -182,7 +182,7 @@ export default {
 const state = reactive({ name: 'Eno Yao' })
 ```
 
-## props
+# props
 
 在 `Vue2.0` 中我们可以使用 `props` 属性值完成父子通信，在这里我们需要定义 `props` 属性去定义接受值的类型，然后我们可以利用 `setup` 的第一个参数获取 `props` 使用。
 
@@ -224,7 +224,7 @@ export default {
 
 <img src="./screenshot/1.gif" />
 
-## context
+# context
 
 `setup` 函数的第二个参数是一个上下文对象，这个上下文对象中包含了一些有用的属性，这些属性在 `Vue2.0` 中需要通过 `this` 才能访问到，在 `vue3.0` 中，访问他们变成以下形式：
 
@@ -315,7 +315,7 @@ export default {
 </script>
 ```
 
-## toRefs
+# toRefs
 
 可以看到我们上面用了很多的新属性，我们先介绍 `toRefs` ，函数可以将 `reactive()` 创建出来的响应式对象，转换为普通的对象，只不过，这个对象上的每个属性节点，都是 `ref()` 类型的响应式数据，配合 `v-model` 指令能完成数据的双向绑定，在开发中非常高效。
 
@@ -336,7 +336,7 @@ export default {
 
 <img src="./screenshot/2.gif" />
 
-## template refs
+# template refs
 
 这里的输入框拥有两个状态，一个是有输入框的状态和无输入框的状态，所以我们需要一个布尔值 `isFocus` 来控制状态，封装了一个 `toggle` 方法，让 `isFocus` 值切换真和假两个状态。
 
@@ -364,7 +364,7 @@ const toggle = () => {
 
 <img src="./screenshot/3.gif" />
 
-## watch
+# watch
 
 `watch()` 函数用来监视某些数据项的变化，从而触发某些特定的操作，使用之前还是需要按需导入，监听 `searchValue` 的变化，然后触发回调函数里面的逻辑，也就是监听用户输入的检索值，然后触发回调函数的逻辑把 `searchValue` 值存进我们创建 `store` 对象里面，方面后面和 `Panel.vue` 列表组件进行数据通信：
 
@@ -393,7 +393,7 @@ export default {
 };
 ```
 
-## state management
+# state management
 
 在这里我们维护一份数据来实现共享状态管理，也就是说我们新建一个 `store.js` 暴露出一个 `store` 对象共享 `Panel` 和 `Search` 组件的 `searchValue` 值，当 `Search.vue` 组件从输入框接受到 `searchValue` 检索值，就放到 `store.js` 的 `store` 对象中，然后把该对象注入到 `Search` 组件中，那么两个组件都可以共享 `store` 对象中的值，为了方便调试我们还分别封装了 `setSearchValue` 和 `getSearchValue` 来去操作该 `store` 对象，这样我们就可以跟踪状态的改变。
 
@@ -571,7 +571,7 @@ onMounted(() => {
 
 <img src="./screenshot/4.gif" />
 
-## computed
+# computed
 
 接下来我们就使用另外一个属性 `computed` 计算属性，跟 `Vue2.0` 的使用方式很相近，同样需要按需导入该模块：
 
