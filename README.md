@@ -6,7 +6,7 @@
 
 - 基于 `Composition API` 即 `Function-based AP` I进行改造，配合 `Vue Cli`，优先体验 `Vue3` 特性
 - 使用单例对象模式进行组件通信
-- 使用 axios 库进行网络请求，weui 库实现 UI 界面
+- 使用 `axios` 库进行网络请求，`weui` 库实现 UI 界面
 
 ```bash
 # 安装依赖
