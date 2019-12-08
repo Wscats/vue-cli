@@ -596,6 +596,8 @@ let newsComputed = computed({
 })
 ```
 
+<img src="./screenshot/5.gif" />
+
 这里我们使用可读可写计算属性去处理列表数据，还记得我们上一个组件 `Search.vue` 吗，我们可以结合用户在搜索框输入的检索值，配合 `computed` 计算属性来筛选对我们用户有用列表数据，所以我们首先从 `store` 的共享实例里面拿到 `Search.vue` 搜索框共享的 `searchValue` ，然后利用原生字符串方法 `indexOf` 和 数组方法 `filter` 来过滤列表的数据，然后重新返回新的列表数据 `newsComputed`，并在视图层上配合 `v-for` 指令去渲染新的列表数据，这样做既可以在没搜索框检索值的时候返回原列表数据 `news` ，而在有搜索框检索值的时候返回新列表数据 `newsComputed`。
 
 ```js
@@ -623,8 +625,6 @@ export default {
   }
 }
 ```
-
-<img src="./screenshot/5.gif" />
 
 # License
 
