@@ -626,6 +626,119 @@ export default {
 }
 ```
 
+<!-- # vue-next
+
+我们也可以从 [vue-next](https://github.com/vuejs/vue-next) 这个项目中去实际感受 `Vue3.0` 的很多特性。
+
+```bash
+# 克隆该项目仓库到本地
+git clone https://github.com/vuejs/vue-next.git
+cd vue-next
+# 安装依赖
+npm install
+# 执行开发命令
+npm run dev
+```
+
+如果上述命令都执行成功，将会在 `vue-next/packages/vue` 目录下会生成一个 `dist` 文件夹，里面会有一份 `vue.global.js` 最新的这份代码编译后还不到1万行，比 `Vue2.0` 还大，看了下到处的接口，已经有一定的完整性了。
+
+<img src="./screenshot/6.png" />
+
+```js
+exports.BaseTransition = BaseTransition;
+exports.Comment = Comment;
+exports.Fragment = Fragment;
+exports.KeepAlive = KeepAlive;
+exports.PatchFlags = PatchFlags;
+exports.Portal = Portal;
+exports.ShapeFlags = PublicShapeFlags;
+exports.Suspense = Suspense;
+exports.Text = Text;
+exports.Transition = Transition;
+exports.TransitionGroup = TransitionGroup;
+exports.callWithAsyncErrorHandling = callWithAsyncErrorHandling;
+exports.callWithErrorHandling = callWithErrorHandling;
+exports.camelize = camelize$1;
+exports.capitalize = capitalize$1;
+exports.cloneVNode = cloneVNode;
+exports.compile = compileToFunction;
+exports.computed = computed$1;
+exports.createApp = createApp;
+exports.createBlock = createBlock;
+exports.createCommentVNode = createCommentVNode;
+exports.createHook = createHook;
+exports.createRenderer = createRenderer;
+exports.createSlots = createSlots;
+exports.createTextVNode = createTextVNode;
+exports.createVNode = createVNode;
+exports.defineComponent = defineComponent;
+exports.effect = effect;
+exports.getCurrentInstance = getCurrentInstance;
+exports.h = h;
+exports.handleError = handleError;
+exports.inject = inject;
+exports.injectHook = injectHook;
+exports.instanceWatch = instanceWatch;
+exports.isReactive = isReactive;
+exports.isReadonly = isReadonly;
+exports.isRef = isRef;
+exports.markNonReactive = markNonReactive;
+exports.markReadonly = markReadonly;
+exports.mergeProps = mergeProps;
+exports.nextTick = nextTick;
+exports.onActivated = onActivated;
+exports.onBeforeMount = onBeforeMount;
+exports.onBeforeUnmount = onBeforeUnmount;
+exports.onBeforeUpdate = onBeforeUpdate;
+exports.onDeactivated = onDeactivated;
+exports.onErrorCaptured = onErrorCaptured;
+exports.onMounted = onMounted;
+exports.onRenderTracked = onRenderTracked;
+exports.onRenderTriggered = onRenderTriggered;
+exports.onUnmounted = onUnmounted;
+exports.onUpdated = onUpdated;
+exports.openBlock = openBlock;
+exports.popScopeId = popScopeId;
+exports.provide = provide;
+exports.pushScopeId = pushScopeId;
+exports.reactive = reactive;
+exports.readonly = readonly;
+exports.recordEffect = recordEffect;
+exports.ref = ref;
+exports.registerRuntimeCompiler = registerRuntimeCompiler;
+exports.render = render;
+exports.renderList = renderList;
+exports.renderSlot = renderSlot;
+exports.resolveComponent = resolveComponent;
+exports.resolveDirective = resolveDirective;
+exports.resolveDynamicComponent = resolveDynamicComponent;
+exports.resolveTransitionHooks = resolveTransitionHooks;
+exports.setBlockTracking = setBlockTracking;
+exports.setTransitionHooks = setTransitionHooks;
+exports.toHandlers = toHandlers;
+exports.toRaw = toRaw;
+exports.toRefs = toRefs;
+exports.toString = toString;
+exports.useCSSModule = useCSSModule;
+exports.useTransitionState = useTransitionState;
+exports.vModelCheckbox = vModelCheckbox;
+exports.vModelDynamic = vModelDynamic;
+exports.vModelRadio = vModelRadio;
+exports.vModelSelect = vModelSelect;
+exports.vModelText = vModelText;
+exports.vShow = vShow;
+exports.version = version;
+exports.warn = warn;
+exports.watch = watch;
+exports.withDirectives = withDirectives;
+exports.withKeys = withKeys;
+exports.withModifiers = withModifiers;
+exports.withScopeId = withScopeId;
+```
+
+我们此时可以看看 `vue-next/packages/vue/examples` 文件夹里面的几个示例。 -->
+
+
 # License
 
 Copyright(C) 2019, [Vue Cli](https://github.com/Wscats/vue-cli) is released under the [MIT](http://opensource.org/licenses/MIT).
