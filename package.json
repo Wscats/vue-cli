@@ -7,7 +7,10 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "jest --coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "lint:check": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@vue/composition-api": "^0.3.4",
@@ -45,5 +48,19 @@
   ],
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "keywords": [
+    "vue",
+    "cli"
+  ],
+  "author": "wscats (https://github.com/wscats)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wscats/vue-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wscats/vue-cli/issues"
+  },
+  "homepage": "https://github.com/wscats/vue-cli#readme"
 }
