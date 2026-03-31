@@ -26,13 +26,13 @@ import store from "../stores";
 export default {
   setup() {
     const state = reactive({
-      // 页数
+      // Page number
       page: 1,
-      // 列表数据
+      // List data
       news: [],
-      // 通过搜索框的值去筛选后的新列表数据
+      // Filtered list based on search value
       newsComputed: computed(() => {
-        // 判断是否输入框是否输入了筛选条件，如果没有返回原始的 news 数组
+        // Return filtered news if search value exists, otherwise return all
         if (store.state.searchValue) {
           return state.news.filter(item => {
             if (item.title.indexOf(store.state.searchValue) >= 0) {
@@ -45,29 +45,28 @@ export default {
       }),
       searchValue: store.state
     });
-    // 发送 ajax 请求获取列表数据
+    // Fetch list data via API
     const loadMore = async () => {
-      // 获取列表数据
-      let data = await axios.get("https://cnodejs.org/api/v1/topics", {
+      const data = await axios.get("https://cnodejs.org/api/v1/topics", {
         params: {
-          // 每一页的主题数量
+          // Topics per page
           limit: 10,
-          // 页数
+          // Page number
           page: state.page
         }
       });
-      // 叠加页数
+      // Increment page number
       state.page += 1;
       state.news = [...state.news, ...data.data.data];
     };
     onMounted(() => {
-      // 首屏加载的时候触发请求
+      // Load initial data on mount
       loadMore();
     });
     return {
-      // 让数据保持响应式
+      // Keep data reactive
       ...toRefs(state),
-      // 查看更多事件
+      // Load more event handler
       loadMore
     };
   }

@@ -26,33 +26,33 @@
 import { reactive, toRefs, watch } from "@vue/composition-api";
 import store from "../stores";
 export default {
-  // setup相当于2.x版本的beforeCreate生命周期
+  // setup() is equivalent to beforeCreate lifecycle in Vue 2.x
   setup() {
-    // reactive() 函数接收一个普通对象，返回一个响应式的数据对象
+    // reactive() takes a plain object and returns a reactive data object
     const state = reactive({
       searchValue: "",
-      // 搜索框两个状态，聚焦和非聚焦
+      // Search bar states: focused and unfocused
       isFocus: false,
       inputElement: null
     });
-    // 切换搜索框状态的方法
+    // Toggle search bar focus state
     const toggle = () => {
-      // 让点击搜索后出现的输入框自动聚焦
+      // Auto-focus the input when search is activated
       state.inputElement.focus();
       state.isFocus = !state.isFocus;
     };
-    // 监听搜索框的值
+    // Watch search input value
     watch(
       () => {
         return state.searchValue;
       },
       () => {
-        // 存储输入框到状态 store 中心，用于组件通信
+        // Store search value in centralized store for cross-component communication
         store.setSearchValue(state.searchValue);
       }
     );
     return {
-      // 将 state 上的每个属性，都转化为 ref 形式的响应式数据
+      // Convert each state property to ref for reactivity
       ...toRefs(state),
       toggle
     };

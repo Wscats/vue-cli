@@ -2,11 +2,11 @@ export default {
     state: {
         searchValue: ""
     },
-    // 设置搜索框的值
+    // Set search value
     setSearchValue(value) {
         this.state.searchValue = value
     },
-    // 获取搜索框的值
+    // Get search value
     getSearchValue() {
         return this.state.searchValue
     }
